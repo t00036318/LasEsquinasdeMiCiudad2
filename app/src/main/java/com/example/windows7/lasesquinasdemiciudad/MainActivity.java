@@ -17,8 +17,9 @@ import java.io.File;
 
 public class MainActivity extends AppCompatActivity {
 
-    int aleatorio;
-    String foto;
+    private int aleatorio;
+    private String foto;
+    private static final int TAKE=0, PICK=1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,8 +27,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        aleatorio = new Double(Math.random() * 100).intValue();
-        foto = Environment.getExternalStorageDirectory() + "/imagen"+ aleatorio +".jpg";
+        //aleatorio = new Double(Math.random() * 100).intValue();
+        //foto = Environment.getExternalStorageDirectory() + "/imagen"+ aleatorio +".jpg";
     }
 
     @Override
@@ -49,13 +50,13 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             Uri output = Uri.fromFile(new File(foto));
             intent.putExtra(MediaStore.EXTRA_OUTPUT, output);
-            startActivityForResult(intent, 1);
+            startActivityForResult(intent, TAKE);
         }
 
         if (id == R.id.action2) {
             Intent galleryIntent = new Intent(Intent.ACTION_PICK,
                     android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-            startActivityForResult(galleryIntent, 1);
+            startActivityForResult(galleryIntent, PICK);
         }
 
         return super.onOptionsItemSelected(item);

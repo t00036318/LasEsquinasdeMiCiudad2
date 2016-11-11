@@ -1,6 +1,7 @@
 package com.example.windows7.lasesquinasdemiciudad;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -9,11 +10,13 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import java.io.File;
+import java.io.ObjectInputStream;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -62,5 +65,24 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Uri uri;
+        if(resultCode==RESULT_OK)
+        switch (requestCode){
+            case TAKE:
+                break;
+            case PICK:
+                uri=data.getData();
+                String[] str={MediaStore.Images.Media.DATA};
+                Cursor cursor=getContentResolver().query(uri,str,null,null,null);
+                cursor.moveToFirst();
+                int index=cursor.getColumnIndex(str[0]);
+                String path=cursor.getString(index);
+                cursor.close();
+                Log.v("Archivo: ",path);
+                break;
+        }
+    }
 }

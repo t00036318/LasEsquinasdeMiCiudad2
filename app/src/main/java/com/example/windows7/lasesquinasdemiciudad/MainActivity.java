@@ -1,10 +1,13 @@
 package com.example.windows7.lasesquinasdemiciudad;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -27,11 +30,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        int i;
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        //aleatorio = new Double(Math.random() * 100).intValue();
-        //foto = Environment.getExternalStorageDirectory() + "/imagen"+ aleatorio +".jpg";
     }
 
     @Override
@@ -50,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action1) {
+            foto = Environment.getExternalStorageDirectory() + "/imagen"+ String.valueOf(getDefaults("cont",getApplicationContext())) +".jpg";
             Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             Uri output = Uri.fromFile(new File(foto));
             intent.putExtra(MediaStore.EXTRA_OUTPUT, output);
@@ -69,9 +72,12 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         Uri uri;
+        Intent actividadSubida= new Intent(getApplicationContext(),UploadActivity.class);
+        actividadSubida.putExtra("op",requestCode);
         if(resultCode==RESULT_OK)
         switch (requestCode){
             case TAKE:
+                actividadSubida.putExtra("path",foto);
                 break;
             case PICK:
                 uri=data.getData();
@@ -82,7 +88,20 @@ public class MainActivity extends AppCompatActivity {
                 String path=cursor.getString(index);
                 cursor.close();
                 Log.v("Archivo: ",path);
+                actividadSubida.putExtra("path",path);
+                startActivity(actividadSubida);
                 break;
         }
+    }
+    public static int getDefaults(String nom, Context cntxt) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(cntxt);
+        return preferences.getInt(nom,0);
+    }
+
+    private void setDefaults(String nom, int cont, Context cntxt) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(cntxt);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putInt(nom, cont);
+        editor.commit();
     }
 }
